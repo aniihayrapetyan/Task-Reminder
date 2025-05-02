@@ -8,7 +8,7 @@ import platform
 import subprocess
 import sys
 
-# File to store tasks
+
 TASKS_FILE = "tasks.json"
 
 def load_tasks():
@@ -93,14 +93,14 @@ def delete_task(task_id):
 
 def notify(title, message):
     """Show a system notification."""
-    if platform.system() == "Darwin":  # macOS
+    if platform.system() == "Darwin":  
         subprocess.run(["osascript", "-e", f'display notification "{message}" with title "{title}"'])
     elif platform.system() == "Linux":
         try:
             subprocess.run(["notify-send", title, message])
         except FileNotFoundError:
             print(f"ALERT: {title} - {message}")
-    else:  # Windows or others
+    else:  
         print(f"ALERT: {title} - {message}")
 
 def monitor_tasks():
@@ -115,23 +115,23 @@ def monitor_tasks():
                 if now >= due_time:
                     notify("Task Due", f"'{task['name']}' is due now!")
         
-        time.sleep(60)  # Check every minute
+        time.sleep(60)  
 
 def parse_due_time(due_str):
     """Parse due time string into datetime object."""
     try:
-        # Try to parse as absolute time first
+        
         return datetime.strptime(due_str, "%Y-%m-%d %H:%M").isoformat()
     except ValueError:
         pass
     
     try:
-        # Try to parse as relative time (e.g., "in 2 hours")
+        
         if due_str.startswith("in "):
             parts = due_str[3:].split()
             if len(parts) == 2:
                 amount = int(parts[0])
-                unit = parts[1].rstrip('s')  # remove plural
+                unit = parts[1].rstrip('s')  
                 
                 if unit == "minute":
                     delta = timedelta(minutes=amount)
@@ -200,7 +200,7 @@ def main():
     delete_parser = subparsers.add_parser("delete", help="Delete a task")
     delete_parser.add_argument("task_id", type=int, help="ID of the task to delete")
 
-    # Monitor command (runs in background)
+    # Monitor command 
     subparsers.add_parser("monitor", help="Start monitoring tasks for alerts (runs in background)")
 
     # Help command
@@ -234,7 +234,7 @@ def main():
         print_help()
 
 if __name__ == "__main__":
-    # Start the monitor in a separate thread if not already running
+   
     if len(sys.argv) > 1 and sys.argv[1] != "monitor":
         monitor_thread = Thread(target=monitor_tasks, daemon=True)
         monitor_thread.start()
